@@ -48,6 +48,9 @@ async function register(){
         alert("Hibás e-mail formátum!");
         return;
     }
+
+    
+
     if (jelszo1 == "" || jelszo2 == "") {
         alert("A jelszó mezők nem lehetnek üresek!");
         return;

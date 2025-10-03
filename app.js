@@ -28,20 +28,22 @@ app.get('/users/:id', (req, res) => {
 // regisztráció
 app.post('/users', (req, res) => {
     const { email, password } = req.body
-    if(!email || !password){
-        return res.status(400).json({message: "Invalid data"})
+    if (!email || !password) {
+        return res.status(400).json({ message: "Invalid data" })
+    }
+
+    // Megnézzük, hogy van-e már ilyen e-mail az adatbázisban
+    const existingUser = db.getUserByEmail(email)
+    if (existingUser) {
+        return res.status(400).json({ message: "Ezzel az e-mail címmel már regisztráltak!" })
     }
 
     const salt = bcrypt.genSaltSync()
     const hashedPassword = bcrypt.hashSync(password, salt)
 
-    try {
-        const saved = db.saveUser(email, hashedPassword)
-        const user = db.getUserById(saved.lastInsertRowid)
-        res.status(201).json(user)
-    } catch (err) {
-        res.status(400).json({message: "Ezzel az e-mail címmel már regisztráltak!"})
-    }
+    const saved = db.saveUser(email, hashedPassword)
+    const user = db.getUserById(saved.lastInsertRowid)
+    res.status(201).json(user)
 })
 
 // bejelentkezés
